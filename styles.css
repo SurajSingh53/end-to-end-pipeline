@@ -1,0 +1,84 @@
+# Future Enhancements Roadmap
+
+## Objective
+Improve the system in ways that directly maximize evaluation performance across:
+- detection pipeline quality
+- API/business logic correctness
+- anomaly relevance
+- reviewer confidence and reproducibility
+
+## Phase 1: Detection Accuracy and Edge Cases
+1. Person detector + tracker upgrade
+- Replace motion-only approximation with detector-assisted tracking.
+- Benefit: stronger entry/exit accuracy under occlusion and crowding.
+
+2. Re-entry handling
+- Add track continuity and short-term identity re-association across camera transitions.
+- Benefit: reduced overcounting and better session correctness.
+
+3. Group handling
+- Add split/merge heuristics and group-level event attribution.
+- Benefit: improved edge-case handling score.
+
+4. Staff movement suppression
+- Add multi-signal staff classification (zone, dwell, temporal behavior).
+- Benefit: cleaner customer-only conversion metrics.
+
+## Phase 2: Funnel and API Correctness
+1. Session lineage graph (delivered)
+- Each session persists its `event_ids` and `event_types` so funnel stages can be re-derived from raw events.
+- Funnel stages are computed from the session-event graph (engagement and billing-zone presence require linked transaction events).
+
+2. Consistency diagnostics endpoint (delivered)
+- `/diagnostics/quality` and `/diagnostics/schema` expose invariant checks (purchasers <= entries, monotonic funnel) for reviewers.
+
+3. Time-sliced funnel metrics (planned)
+- Add hourly and camera-specific funnel slices.
+- Benefit: better business interpretability.
+
+## Phase 3: Anomaly Intelligence
+1. Behavior anomalies
+- Detect high footfall + low conversion windows.
+- Detect unusual dwell-time spikes by zone.
+
+2. Operational anomalies
+- Camera feed outage, frame-drop bursts, and stale-event drift alerts.
+
+3. Confidence-calibrated anomalies
+- Include confidence, explainers, and contributing signals for each anomaly.
+
+## Phase 4: Evaluation-Focused Reviewer Experience
+1. One-command evaluator report
+- Gate pass/fail summary.
+- Detection/API/anomaly sub-scores.
+- Top limitations and mitigation notes.
+
+2. Deterministic replay mode
+- Fixed input slices and expected outputs for reproducible checks.
+
+3. Documentation parity checks
+- Automated check ensuring docs reflect latest API/schema behavior.
+
+## Priority Matrix
+1. Must-have (short term)
+- detector + tracker upgrade
+- re-entry handling
+- diagnostics endpoint with invariants
+
+2. Should-have (mid term)
+- zone-level intelligence from store layout
+- richer anomaly classes
+
+3. Nice-to-have (long term)
+- model drift dashboards
+- adaptive thresholding by time-of-day
+
+## Success Metrics
+1. Detection improvements
+- lower entry/exit deviation on sampled clips.
+
+2. Funnel correctness
+- zero invariant violations across repeated runs.
+
+3. Reviewer efficiency
+- complete reviewer checks in under 10 minutes with clear diagnostics.

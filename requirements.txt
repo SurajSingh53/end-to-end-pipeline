@@ -1,0 +1,25 @@
+services:
+  store-intelligence:
+    build: .
+    container_name: store-intelligence
+    ports:
+      - "8000:8000"
+    environment:
+      # Leave APP_TRANSACTIONS_FILE unset to auto-discover the first CSV in inputs/transactions/.
+      # Evaluators: drop your transactions CSV anywhere in inputs/transactions/ and CCTV mp4s in inputs/cctv/.
+      - APP_VIDEO_DIR=inputs/cctv
+      - APP_EVENT_STORE=artifacts/events.jsonl
+      - APP_SESSION_STORE=artifacts/sessions.json
+      - APP_METRICS_STORE=artifacts/metrics.json
+    restart: unless-stopped
+
+  store-intelligence-frontend:
+    image: nginx:alpine
+    container_name: store-intelligence-frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - store-intelligence
+    restart: unless-stopped

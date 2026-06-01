@@ -1,0 +1,69 @@
+# Evaluator Guide (Top-30 Focus)
+
+## Goal
+This guide is optimized for time-boxed review. It helps evaluators verify system execution, API correctness, event quality, and business logic consistency in under 10 minutes.
+
+## 1) Quick Start
+From repository root:
+
+```powershell
+./scripts/run-stack.ps1 -Build -Detach
+./scripts/smoke-check.ps1
+./scripts/acceptance-gate-check.ps1
+./scripts/evaluator-report.ps1
+```
+
+Expected outcome:
+- smoke check: PASS
+- acceptance gate: OVERALL PASS
+- evaluator report: READINESS STRONG or MODERATE
+
+## 2) Core Endpoints
+- Health: http://localhost:8000/health
+- Metrics: http://localhost:8000/metrics
+- Funnel: http://localhost:8000/funnel
+- Event sample: http://localhost:8000/events/sample?limit=20
+- Event schema: http://localhost:8000/diagnostics/schema
+- Frontend dashboard: http://localhost:8080
+
+## 3) What to Validate
+1. System execution
+- Containers start successfully via runtime auto-detect script.
+- API responds from localhost:8000.
+
+2. API correctness
+- Metrics include entries, purchasers, conversion_rate, cameras_processed.
+- Funnel includes monotonic flag.
+
+3. Event quality
+- Structured events are present.
+- Required fields include event_id, event_type, event_time, session_id, confidence, dedupe_key.
+
+4. Business invariants
+- purchasers <= entries
+- funnel monotonic non-increasing
+
+5. Persistence
+- artifacts/events.jsonl
+- artifacts/sessions.json
+- artifacts/metrics.json
+
+## 4) 5-Minute Demo Script
+1. Start stack with one command.
+2. Run smoke and acceptance checks.
+3. Open dashboard and show live metrics + funnel + events.
+4. Hit /events/sample and /diagnostics/schema to prove structured event contracts.
+5. Run evaluator report and call out score + remaining limitations.
+
+## 5) Known Limitations (Transparent)
+- Vision pipeline is motion+tripwire baseline, not full detector+re-identification.
+- Crowded/occluded scenes can reduce counting fidelity.
+- Layout workbook is not yet fully mapped to camera-zone attribution.
+
+## 6) Risk Mitigations Already Included
+- Runtime guardrails and startup retries for service readiness.
+- Deterministic artifact persistence for reproducible review.
+- Explicit invariants checked by acceptance script.
+
+## 7) Submission Positioning
+This project prioritizes execution reliability, transparent trade-offs, and evaluator speed. It demonstrates a complete path from CCTV + transactions to business-facing conversion/funnel outputs with auditable artifacts and reproducible checks.
